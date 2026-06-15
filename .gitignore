@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Output files
+*.png
+*.pptx
+*.csv
+
+# Generated Marp decks (regenerate with: python3 generate_deck.py)
+.github/skills/presentation-deck/deck_*.md
+
+# OS
+.DS_Store
+Thumbs.db
