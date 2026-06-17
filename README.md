@@ -1,184 +1,159 @@
-# Sunrise Data Science Research Skills
+# SuperBooster Churn Impact Assessment
 
-This repository is a mock data science research workspace for turning business questions into analytical evidence and stakeholder-ready recommendations.
+## Executive Summary
+The junior analysis compares churn rates between customers who requested SuperBooster and those who did not. This is **not** a valid causal estimate because treatment assignment is self-selected, not randomized.
 
-The core purpose is to support high-value decisions through analytics, experimentation, impact measurement, causal inference, and optimization. Each case skill demonstrates the full path from stakeholder prompt to mathematical framing, mock data generation, analysis scripts, CHF impact calculation, and presentation output.
+Customers who request a Wi-Fi booster are likely systematically different from others (for example, heavier internet users, different tenure profiles, or different product bundles). These same factors can independently affect churn. As a result, the naive churn gap mixes:
 
-## How A New Agent Should Operate This Repo
+1. The true effect of SuperBooster.
+2. Pre-existing risk differences between groups.
 
-Start here, then use the skill docs.
+This is a classic **selection bias / confounding** problem. The project therefore reports two views:
 
-1. Read [.github/skills/README.md](.github/skills/README.md) to identify the right workflow.
-2. Always load [.github/skills/data-preprocessing/SKILL.md](.github/skills/data-preprocessing/SKILL.md) first when mock or cleaned telco data is needed.
-3. Load the analytical skill matching the business question.
-4. Run or adapt the scripts inside that skill folder.
-5. Load [.github/skills/presentation-deck/SKILL.md](.github/skills/presentation-deck/SKILL.md) last to generate a Marp + Mermaid.js stakeholder deck.
-6. Leave durable artifacts under `notebooks/` and `docs/` when conducting a new research task.
+1. **Naive view** for transparency.
+2. **Causal-adjusted view** using logistic regression with observed covariates (and optional propensity score checks) to estimate the incremental churn reduction attributable to SuperBooster.
 
-The intended flow is:
+The business decision (roll out to 1.5M users or not) should be based on the causal-adjusted effect and corresponding ROI, not the naive comparison.
 
-```text
-business question
-  -> analytical framing
-  -> mock/clean data
-  -> rigorous method
-  -> validation and CHF impact
-  -> executive recommendation deck
+## Objective
+Estimate whether giving SuperBooster to all 1.5 million internet customers is financially justified.
+
+- Value of prevented churn: CHF 1,800 per customer.
+- Booster unit cost: CHF 35 per customer.
+- Full rollout cost: CHF 52,500,000.
+
+## Data Assets
+1. `cust_details.csv`: customer features and product mix.
+2. `SuperBooster.csv`: treated customers (`has_booster = 1`).
+3. `cancellations.csv`: churn label (`churned = 1`).
+
+## Analytical Plan
+1. Build analysis table at customer level.
+2. Engineer treatment and outcome flags.
+3. Run quality checks (join coverage, duplicates, missingness, category balance).
+4. Produce naive churn comparison.
+5. Fit causal-adjusted logistic regression.
+6. Translate adjusted treatment effect to prevented churn and net ROI under full rollout.
+7. Perform robustness checks (alternative model specifications, subgroup sanity checks).
+
+## Data Wrangling and Modeling Pipeline
+```mermaid
+flowchart TD
+    A[cust_details.csv] --> D[Base customer table]
+    B[SuperBooster.csv] --> E[Create has_booster flag]
+    C[cancellations.csv] --> F[Create churned flag]
+
+    D --> G[Left join has_booster by customer_id]
+    E --> G
+
+    G --> H[Left join churned by customer_id]
+    F --> H
+
+    H --> I[Feature prep\n- age from dob\n- missing product indicators\n- categorical encoding]
+    I --> J[QC checks\n- duplicates\n- missingness\n- class imbalance]
+
+    J --> K[Naive View\nRaw churn by has_booster]
+    J --> L[Causal View\nLogistic regression with covariates]
+
+    L --> M[Adjusted treatment effect on churn]
+    K --> N[Comparison: Naive vs Adjusted]
+    M --> O[Business impact and ROI]
+    N --> O
 ```
 
-## Repository Structure
+## Mathematical Framework
+### 1) Naive Probability Comparison (Biased)
+Let $T_i \in \{0,1\}$ indicate booster status and $Y_i \in \{0,1\}$ indicate churn.
 
-```text
-sunrise/
-├── .github/skills/
-│   ├── README.md                         # Skill index and agent output contract
-│   ├── data-preprocessing/
-│   │   ├── SKILL.md                      # When/how to create and clean telco data
-│   │   └── telco_preprocessing.py        # Mock data, missing values, encoding, features
-│   ├── uplift-modeling/
-│   │   ├── SKILL.md                      # Retention targeting via causal uplift
-│   │   ├── uplift_churn_model.py         # T/X/S learners using causalml/sklift patterns
-│   │   ├── metrics_and_plots.py          # Qini curve and uplift decile charts
-│   │   └── pnl_calculator.py             # CHF ROI and optimal targeting size
-│   ├── causal-impact/
-│   │   ├── SKILL.md                      # Campaign evaluation without control group
-│   │   ├── synthetic_control.py          # Counterfactual time-series analysis
-│   │   └── dowhy_analysis.py             # Causal graph/refutation alternative
-│   ├── ab-test-design/
-│   │   ├── SKILL.md                      # Power, duration, CUPED, guardrails
-│   │   ├── power_analysis.py             # Sample size and experiment blueprint
-│   │   └── cuped_variance_reduction.py   # CUPED and guardrail checks
-│   ├── channel-optimization/
-│   │   ├── SKILL.md                      # Next-best-action/channel allocation
-│   │   └── channel_optimization.py       # Propensity + constrained optimization
-│   └── presentation-deck/
-│       ├── SKILL.md                      # Marp/Mermaid deck generation instructions
-│       └── generate_deck.py              # Code-generated case decks
-├── requirements.txt                      # Python analytical dependencies
-├── .gitignore                            # Ignores generated charts/decks/cache files
-└── README.md                             # This operator guide
-```
+Naive churn rates:
 
-## Skills At A Glance
+$$
+\hat{p}_1 = P(Y=1 \mid T=1), \qquad \hat{p}_0 = P(Y=1 \mid T=0)
+$$
 
-| Skill | Use When | Main Output |
-|-------|----------|-------------|
-| `data-preprocessing` | Generate mock telco data or clean raw customer data | Modeling-ready customer dataset |
-| `uplift-modeling` | Decide which customers should receive retention treatment | Uplift ranking, Qini/decile charts, CHF P&L |
-| `causal-impact` | Evaluate a campaign/intervention without a control group | Actual vs counterfactual chart, incremental revenue |
-| `ab-test-design` | Plan/analyze experiments, rollouts, defaults, pricing tests | Sample size, duration, CUPED result, guardrails |
-| `channel-optimization` | Allocate SMS/email/calls under capacity or budget constraints | Optimal channel allocation and ROI comparison |
-| `presentation-deck` | Turn analysis into stakeholder communication | Marp Markdown deck with Mermaid diagrams |
+Naive effect estimate:
 
-## Environment Setup
+$$
+\Delta_{\text{naive}} = \hat{p}_1 - \hat{p}_0
+$$
 
-Use `python3` on macOS.
+This is generally biased when $T$ is correlated with confounders $X$.
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+### 2) Causal-Adjusted Logistic Regression
+Model churn probability controlling for observed confounders $X_i$ (tenure, internet usage, commune, age, gender, TV/mobile product indicators, ZIP bucket):
 
-The requirements install the local `sunrise_style` package in editable mode. Use it for every notebook, plotting script, and generated deck so charts and presentations stay close to the visual language in [sunrise_sample_presentation.pdf](sunrise_sample_presentation.pdf): warm Sunrise orange/coral, cyan/blue accents, clean Avenir Next or Source Sans style typography, light gridlines, and consistent Marp table spacing.
+$$
+\text{logit}\big(P(Y_i=1 \mid T_i, X_i)\big)
+= \beta_0 + \beta_1 T_i + \beta^\top X_i
+$$
 
-```python
-from sunrise_style import apply_matplotlib_style, color, group_color, save_figure
+with
 
-apply_matplotlib_style()
-# use color("orange"), group_color("treatment"), and save_figure(fig, path)
-```
+$$
+\text{logit}(p) = \log\left(\frac{p}{1-p}\right)
+$$
 
-For Marp decks generated from Python, use:
+Interpretation:
 
-```python
-from sunrise_style import marp_frontmatter
+- $\beta_1$ captures the booster effect on churn **conditional on observed covariates**.
+- The adjusted incremental churn reduction can be estimated as an average treatment effect proxy:
 
-deck = marp_frontmatter(title="Sunrise Case Study") + "# Executive Recommendation\n"
-```
+$$
+\widehat{\Delta}_{\text{adj}} = \frac{1}{N}\sum_{i=1}^{N}\left[\hat{P}(Y_i=1\mid T_i=1, X_i)-\hat{P}(Y_i=1\mid T_i=0, X_i)\right]
+$$
 
-The presentation generator itself has no Python package dependency. Exporting Marp decks requires Marp CLI:
+Prevented churn under rollout uses the negative of this quantity if booster lowers churn:
 
-```bash
-npm install -g @marp-team/marp-cli
-```
+$$
+\widehat{\text{PreventedRate}} = -\widehat{\Delta}_{\text{adj}}
+$$
 
-## Running Existing Skill Scripts
+### 3) Net ROI Formula
+Define:
 
-Run scripts from inside their skill folder so relative outputs land next to the skill.
+- $N = 1{,}500{,}000$ customers
+- $V = 1{,}800$ CHF value per prevented churn
+- $C = 35$ CHF booster cost per customer
+- $r = \widehat{\text{PreventedRate}}$
 
-```bash
-# Data foundation
-cd .github/skills/data-preprocessing
-python3 telco_preprocessing.py
+Then:
 
-# Case 1: retention uplift
-cd ../uplift-modeling
-python3 uplift_churn_model.py
-python3 metrics_and_plots.py
-python3 pnl_calculator.py
+$$
+\text{ExpectedGain} = N \cdot r \cdot V
+$$
 
-# Case 2: campaign impact without control group
-cd ../causal-impact
-python3 synthetic_control.py
-python3 dowhy_analysis.py
+$$
+\text{ProgramCost} = N \cdot C
+$$
 
-# Case 3: experiment design and CUPED
-cd ../ab-test-design
-python3 power_analysis.py
-python3 cuped_variance_reduction.py
+$$
+\text{NetROI (CHF)} = \text{ExpectedGain} - \text{ProgramCost}
+$$
 
-# Case 4: channel optimization
-cd ../channel-optimization
-python3 channel_optimization.py
+Equivalent closed form:
 
-# Presentation decks
-cd ../presentation-deck
-python3 generate_deck.py              # all decks
-python3 generate_deck.py uplift       # one deck only
-```
+$$
+\text{NetROI (CHF)} = N\,(rV - C)
+$$
 
-Generated charts and generated `deck_*.md` files are ignored by git. Regenerate them from the scripts when needed.
+Break-even prevented churn rate:
 
-## Conducting A New Research Case
+$$
+r_{\text{break-even}} = \frac{C}{V} = \frac{35}{1800} \approx 1.94\%
+$$
 
-For a new task, create durable, reviewable artifacts:
+## Deliverables in This Plan
+1. Transparent naive estimate (for context only).
+2. Causal-adjusted treatment effect estimate.
+3. Financial recommendation based on adjusted effect and break-even threshold.
+4. Sensitivity checks and caveats on unobserved confounding.
 
-```text
-docs/<research-slug>/deck.md           # Final Marp presentation
-docs/<research-slug>/*.pdf|*.html      # Optional exports
-notebooks/<research-slug>.ipynb        # Reproducible analysis audit trail
-notebooks/<research-slug>/raw/         # Source-like mock/raw data
-notebooks/<research-slug>/processed/   # Processed data/model outputs
-notebooks/<research-slug>/charts/      # Figures consumed by the deck
-```
+## Key Risks and Assumptions
+1. Causal validity depends on measured confounders; unobserved factors may remain.
+2. Static snapshot assumption is accepted per assignment; no survival modeling applied.
+3. Uplift may be heterogeneous; a blanket rollout may underperform targeted treatment.
 
-The notebook should explain:
-
-1. Business case and decision to support
-2. EDA and data wrangling
-3. Selected methodology and why simpler approaches fail
-4. Calculation, validation, and sensitivity checks
-5. Results, CHF impact, assumptions, and recommendation
-
-Include Mermaid diagrams for the data flow and methodology/design when useful.
-
-## Decision-Support Principles
-
-- Translate every business prompt into a clear analytical problem.
-- Name the naive trap before presenting the advanced method.
-- Prefer causal or experimental evidence over correlation when decisions require impact claims.
-- Convert model outputs into CHF, ROI, cost, risk, and operational constraints.
-- Use guardrails for customer harm, not only primary revenue metrics.
-- End with a concrete recommendation: go, no-go, scale, retest, or investigate.
-
-## Verification Checklist
-
-Before handing off a research result:
-
-- The selected `SKILL.md` was followed and any assumptions are documented.
-- Charts and decks use the shared `sunrise_style` package rather than local hard-coded palettes.
-- Scripts or notebooks run in the active environment, or missing dependencies are explicitly noted.
-- Outputs include at least one business-facing artifact: P&L, counterfactual impact, experiment blueprint, or allocation recommendation.
-- The deck matches the evidence and does not claim more certainty than the analysis supports.
-- Generated artifacts are either saved under `docs/` / `notebooks/` or intentionally ignored as reproducible outputs.
+## Recommendation Logic
+1. If adjusted prevented churn rate $r > 1.94\%$, full rollout is potentially value-accretive.
+2. If $r \leq 1.94\%$, avoid blanket rollout and evaluate targeted deployment to high-uplift segments.
+3. Always prioritize adjusted results over naive rate differences for executive decisions.
