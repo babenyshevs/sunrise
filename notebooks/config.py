@@ -27,8 +27,8 @@ FINANCIAL_COLORS = {
     "reference": "#4A4543",
 }
 
-# Matplotlib theme for financial business case charts.
-FINANCIAL_MATPLOTLIB_THEME = {
+# Shared matplotlib theme for charts.
+MATPLOTLIB_THEME = {
     "axes.edgecolor": "#D8D3CF",
     "axes.labelcolor": "#4A4543",
     "axes.titlecolor": "#2F2B29",
