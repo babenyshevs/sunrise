@@ -44,6 +44,9 @@ MATPLOTLIB_THEME = {
 SNS_STYLE = "whitegrid"
 SNS_PALETTE = "muted"
 
+# Shared figure height for all notebook plots.
+FIGURE_HEIGHT = 5
+
 # Bar edge colour applied to all bar/stacked charts.
 BAR_EDGE_COLOR = "white"
 
