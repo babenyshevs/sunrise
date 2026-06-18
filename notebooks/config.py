@@ -27,6 +27,19 @@ FINANCIAL_COLORS = {
     "reference": "#4A4543",
 }
 
+# Matplotlib theme for financial business case charts.
+FINANCIAL_MATPLOTLIB_THEME = {
+    "axes.edgecolor": "#D8D3CF",
+    "axes.labelcolor": "#4A4543",
+    "axes.titlecolor": "#2F2B29",
+    "xtick.color": "#6B625D",
+    "ytick.color": "#6B625D",
+    "grid.color": "#ECE7E2",
+    "grid.alpha": 1.0,
+    "axes.facecolor": "#FFFFFF",
+    "figure.facecolor": "#FFFFFF",
+}
+
 # Seaborn theme defaults.
 SNS_STYLE = "whitegrid"
 SNS_PALETTE = "muted"
