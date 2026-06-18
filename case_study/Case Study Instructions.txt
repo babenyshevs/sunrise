@@ -40,3 +40,9 @@ Data sets
 * cancellations.csv: contains a list of customer_ids who have cancelled their subscription during the observed time period
 
 Note: For the purpose of this exercise, you may ignore any timing, time-to-event and observation window related factors.
+
+
+
+
+
+
