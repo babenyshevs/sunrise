@@ -1,7 +1,5 @@
 # Leadership & Process Proposal
 
-*Prepared for the Monthly Consumer Leadership Meeting Follow-up*
-
 ---
 
 # 1. Process Update: The "Methodology Sync"
@@ -78,19 +76,19 @@ A pragmatic rollout to align the team, standardize quality, and build community�
 gantt
     title Head of Data Science: First 90 Days
     dateFormat YYYY-MM-DD
-    axisFormat Day %d
+    axisFormat %d %b
 
     section 0–30 Days: Assess
-    Review in-flight strategic projects     :a1, 2024-01-01, 10d
-    1-on-1s & map team skills               :a2, after a1, 10d
-    Implement 'Methodology Syncs'           :milestone, m1, 2024-01-20, 0d
+    Review in-flight strategic projects      :a1, 2026-07-01, 10d
+    1-on-1s & map team skills                :a2, after a1, 10d
+    Implement "Methodology Syncs"            :milestone, m1, 2026-07-20, 0d
 
     section 30–60 Days: Standardize
-    Draft 'A/B & Observational Playbook'    :b1, 2024-01-30, 15d
-    Align new workflow with Scrum Masters   :b2, after b1, 10d
+    Draft "A/B & Observational Playbook"     :b1, 2026-07-30, 15d
+    Align new workflow with Scrum Masters    :b2, after b1, 10d
     Provide Executive Presentation templates :b3, after b1, 10d
 
     section 60–90 Days: Scale
-    Establish Junior-Senior mentoring       :c1, 2024-03-01, 15d
-    Host 'Data Literacy' Workshop for POs   :milestone, m2, 2024-03-15, 0d
+    Establish Junior-Senior mentoring        :c1, 2026-08-30, 15d
+    Host "Data Literacy" Workshop for POs    :milestone, m2, 2026-09-13, 0d
 ```

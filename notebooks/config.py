@@ -70,6 +70,15 @@ CHURN_RATE_COLORS = {
     "reference": "black",    # overall-average reference line
 }
 
+# AME chart colors (3.2_logit_AME.ipynb).
+AME_PLOT_COLORS = {
+    "bar_fill": BOOSTER_COLORS["Has Booster"],
+    "bar_edge": BOOSTER_COLORS["Has Booster"],
+    "ci": CHURN_RATE_COLORS["reference"],
+    "reference": CHURN_RATE_COLORS["reference"],
+    "label": "#2F2B29",
+}
+
 # Font sizes.
 FONT_SIZE_TITLE    = 13  # main plot title / suptitle
 FONT_SIZE_SUBTITLE = 12  # secondary or long multi-line titles
