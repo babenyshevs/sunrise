@@ -1,0 +1,48 @@
+Situation:
+* You're approached by a Junior Analyst in your team, asking for a review of the task they were assigned by the scrum master two weeks ago.
+* The Chief Consumer Officer is looking to reduce cancellation rates among fixed internet customers.
+* The plan is to give a free Wi-Fi booster to every internet client, leading to better in-home connectivity and, hence, a more sticky product.
+* Your Junior Analyst was researching cancellation rates of clients who have previously requested a Wi-Fi booster, comparing them to other internet clients.
+* They have been given a 10-minute slot to present results during the Monthly Consumer Leadership Meeting, in four days.
+* They think they are ready for the presentation but seem a little uneasy.
+
+Your Task:
+* Review the Junior's attached presentation and prepare to give them feedback.
+	- Focusing only on the analytical approach: What was done well? What was missed?
+	- Comment on form and layout of the presentation itself.
+* The meeting with our CCO is due in four days. Please take charge of the situation.
+	- Add, modify, remove or rework the presentation as you deem fit. You will be asked to present it during the interview.
+	- If you write any code, please also bring it along. We will want to look at it.
+	- The raw data used by the Junior Analyst is attached to this document and described below. You may assume it is technically clean.
+* Briefly outline a training/coaching plan for the Junior Analyst, and any process changes you may want to initiate.
+* If you want to assess financials, feel free to work with the following assumptions: 
+	- The monetary value of a prevented cancellation is CHF 100 of monthly revenue for 18 months.
+	- A booster's total unit cost (including shipping and installation) is CHF 35.
+	- The total internet user base is 1.5 million customers.
+
+Please bring a laptop to the interview to show every part of your work.
+
+Data sets
+* cust_details.csv: contains potentially relevant information about internet customers during an adequate time period for every customer who requested a Wi-Fi booster, and a representative sample of customers without a booster.
+	Column description
+	- customer_id: a surrogate key uniquely identifying customers. No purpose or meaning other than identification.
+	- zip: The first digit of the ZIP code corresponding to the customer's home location.
+	- commune: Encoding population density around the customer's home location. Can be either "urban" or "rural".
+	- gender: Customer's gender. Can be either "f" or "m".
+	- dob: Customer's date of birth. Format: "yyyy-mm-dd"
+	- tenure: Total number of months the customer's subscription has been active.
+	- internet_usage: Encoding how heavily the customer is using their internet subscription. Can be "Low", "Medium", "High" or "Extreme".
+	- tv_product: Encoding the quality rank of the customer's TV subscription. Can be "Low", "Medium" or "High". Optional, with missing values indicating no TV product.
+	- mobile_product: Encoding the quality rank of the customer's mobile phone subscription. Can be "Low", "Medium" or "High". Optional, with missing values indicating no mobile phone product.
+
+* SuperBooster.csv: contains a list of customer_ids who have asked for, received, and are using SuperBooster™
+
+* cancellations.csv: contains a list of customer_ids who have cancelled their subscription during the observed time period
+
+Note: For the purpose of this exercise, you may ignore any timing, time-to-event and observation window related factors.
+
+
+
+
+
+
